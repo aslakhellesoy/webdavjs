@@ -1,11 +1,11 @@
 eval(loadFile("src/foo.js"));
 
 testCases(test,
-	function defaultPropertyIs1() {
+	function fooShouldBeBar() {
 		assert.that(foo(), eq('bar'));
 	},
 
-	function defaultPropertyIs2() {
-		assert.that(foo(), eq('baz'));
+	function xhrShouldWork() {
+		assert.that(xhr(), eq('baz'));
 	}
 );
