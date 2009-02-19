@@ -1,0 +1,33 @@
+<project name="webdav.js" basedir="." default="test">
+
+	<target name="test" depends="rhinounit, jslint"/>
+
+	<target name="rhinounit">
+  	<scriptdef name="rhinounit"
+  			  src="rhinounit_1_2_1/src/rhinoUnitAnt.js"
+  			  language="javascript">
+  		<attribute name="options"/>
+  		<attribute name="ignoredglobalvars"/>
+  		<attribute name="haltOnFirstFailure"/>
+  		<attribute name="rhinoUnitUtilPath"/>
+  		<element name="fileset" type="fileset"/>
+  	</scriptdef>
+
+		<rhinounit options="{verbose:true, stackTrace:true}" haltOnFirstFailure="true" rhinoUnitUtilPath="rhinounit_1_2_1/src/rhinoUnitUtil.js">
+			<fileset dir="test">
+				<include name="*.js"/>
+			</fileset>
+		</rhinounit>
+	</target>
+
+  <target name="jslint">
+    <taskdef name="jslint"
+      classname="net.happygiraffe.jslint.ant.JSLintTask"
+      classpath="jslint4java-1.2.1/jslint4java-1.2.1.jar" />
+
+    <jslint options="undef">
+      <formatter type="plain" />
+      <fileset dir="src" includes="*.js" />
+    </jslint>
+  </target>
+</project>
