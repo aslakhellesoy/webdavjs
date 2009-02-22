@@ -7,6 +7,14 @@ var WebDav = {
   PROPFIND: function(url, callback) {
     return this.request('PROPFIND', url, 'xml', callback);
   },
+
+  MKCOL: function(url, callback) {
+    return this.request('MKCOL', url, 'text', callback);
+  },
+  
+  DELETE: function(url, callback) {
+    return this.request('DELETE', url, 'text', callback);
+  },
   
   request: function(verb, url, type, callback) {
     var xhr = new XMLHttpRequest();
@@ -14,7 +22,9 @@ var WebDav = {
       var b = xhr.responseText;
       if (type == 'xml') {
         var xml = xhr.responseXML;
-        b = (xml.firstChild.nextSibling) ? xml.firstChild.nextSibling : xml.firstChild;
+        if(xml) {
+          b = (xml.firstChild.nextSibling) ? xml.firstChild.nextSibling : xml.firstChild;
+        }
       }
       return b;
     };
@@ -32,7 +42,7 @@ var WebDav = {
     xhr.open(verb, url, async);
     xhr.setRequestHeader("Content-Type", "text/xml; charset=UTF-8");
     xhr.send(null);
-    
+
     if(!async) {
       return body();
     }
@@ -48,6 +58,10 @@ WebDav.Fs = {
       return WebDav.GET(url, callback);
     };
 
+    this.rm = function(callback) {
+      return WebDav.DELETE(url, callback);
+    };
+
     return this;
   },
   
@@ -56,6 +70,9 @@ WebDav.Fs = {
 
     this.children = function(callback) {
       var childrenFunc = function(doc) {
+        if(doc.childNodes == null) {
+          throw('No such directory: ' + url);
+        }
         var result = [];
         for(var i=0; i< doc.childNodes.length; i++) {
           var response     = doc.childNodes[i];
@@ -81,6 +98,14 @@ WebDav.Fs = {
       } else {
         return childrenFunc(WebDav.PROPFIND(url));
       }
+    };
+
+    this.rm = function(callback) {
+      return WebDav.DELETE(url, callback);
+    };
+
+    this.mkdir = function(callback) {
+      return WebDav.MKCOL(url, callback);
     };
 
     return this;

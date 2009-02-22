@@ -158,15 +158,17 @@ var __env__ = {};
                     length,
                     responseXML = null;
 
-                while ((length = stream.read(buffer)) != -1) {
-                    baos.write(buffer, 0, length);
+                if(stream) {
+                  while ((length = stream.read(buffer)) != -1) {
+                      baos.write(buffer, 0, length);
+                  }
+
+                  baos.close();
+                  stream.close();
+
+                  xhr.responseText = java.nio.charset.Charset.forName("UTF-8").
+                      decode(java.nio.ByteBuffer.wrap(baos.toByteArray())).toString()+"";
                 }
-
-                baos.close();
-                stream.close();
-
-                xhr.responseText = java.nio.charset.Charset.forName("UTF-8").
-                    decode(java.nio.ByteBuffer.wrap(baos.toByteArray())).toString()+"";
                 
         }
         if(responseHandler){

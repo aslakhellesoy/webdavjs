@@ -24,15 +24,29 @@ suite('WebDAV')
     var doc = WebDav.PROPFIND('http://localhost:8085/webdav/folder3');
     assertEquals(4, doc.childNodes.length);
   })
-
+  
   test('should do dir', function() {
     var dir = WebDav.Fs.dir('http://localhost:8085/webdav/folder3');
     assertEquals(4, dir.children().length);
-
+  
     assertEquals('http://localhost:8085/webdav/folder3/',           dir.children()[0].url);
     assertEquals('http://localhost:8085/webdav/folder3/index.html', dir.children()[1].url);
     assertEquals('http://localhost:8085/webdav/folder3/stuff.html', dir.children()[2].url);
     assertEquals('http://localhost:8085/webdav/folder3/subfolder1', dir.children()[3].url);
+  })
+  
+  test('should mkdir', function() {
+    var dir = WebDav.Fs.dir('http://localhost:8085/webdav/testmkdir');
+    dir.rm();
+    var expectedFailure = false;
+    try {
+      dir.children();
+    } catch(e) {
+      expectedFailure = true;
+      dir.mkdir();
+    }
+    assertTrue(expectedFailure);
+    assertEquals(1, dir.children().length);
   })
 
 run();
