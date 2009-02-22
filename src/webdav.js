@@ -1,16 +1,14 @@
-// var request =  new XMLHttpRequest();
-// request.open("GET", 'http://localhost:8085/webdav/folder1', false);
-// request.send(null);
-WebDav = function() {
-  this.GET = function(url, callback) {
+// A raw WebDAV interface
+var WebDav = {
+  GET: function(url, callback) {
     return this.request('GET', url, 'text', callback);
-  };
+  },
 
-  this.PROPFIND = function(url, callback) {
+  PROPFIND: function(url, callback) {
     return this.request('PROPFIND', url, 'xml', callback);
-  };
+  },
   
-  this.request = function(verb, url, type, callback) {
+  request: function(verb, url, type, callback) {
     var xhr = new XMLHttpRequest();
     var body = function() {
       var b = xhr.responseText;
@@ -38,19 +36,53 @@ WebDav = function() {
     if(!async) {
       return body();
     }
-  };
-  
-  return this;
+  }
 };
 
-WebDavFs = function(baseUrl) {
-  this.file = function(path) {
-    var url = baseUrl + path;
+// An Object-oriented API around WebDav.
+WebDav.Fs = {
+  file: function(url) {
+    this.url = url;
     
     this.read = function(callback) {
-      return new WebDav().GET(url, callback);
+      return WebDav.GET(url, callback);
     };
 
     return this;
-  };
+  },
+  
+  dir: function(url) {
+    this.url = url;
+
+    this.children = function(callback) {
+      var childrenFunc = function(doc) {
+        var result = [];
+        for(var i=0; i< doc.childNodes.length; i++) {
+          var response     = doc.childNodes[i];
+          var href         = response.getElementsByTagName('D:href')[0].firstChild.nodeValue;
+          var propstat     = response.getElementsByTagName('D:propstat')[0];
+          var prop         = propstat.getElementsByTagName('D:prop')[0];
+          var resourcetype = prop.getElementsByTagName('D:resourcetype')[0];
+          var collection   = resourcetype.getElementsByTagName('D:collection')[0];
+
+          if(collection) {
+            result[i] = new WebDav.Fs.dir(href);
+          } else {
+            result[i] = new WebDav.Fs.file(href);
+          }
+        }
+        return result;
+      };
+
+      if(callback) {
+        WebDav.PROPFIND(url, function(doc) {
+          callback(childrenFunc(doc));
+        });
+      } else {
+        return childrenFunc(WebDav.PROPFIND(url));
+      }
+    };
+
+    return this;
+  }
 }
