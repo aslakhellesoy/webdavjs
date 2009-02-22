@@ -1,6 +1,9 @@
 /*
 *	env.rhino.js - built from http://github.com/aslakhellesoy/env-js/tree/3ef4e6b7cf6dc497a4809039a2923d6738a0bc9b
 */
+
+java.net.URL.setURLStreamHandlerFactory(new Packages.DavHandler());
+
 var __env__ = {};
 (function($env){
     
@@ -127,9 +130,10 @@ var __env__ = {};
             connection.setRequestMethod( xhr.method );
             
             // Add headers to Java connection
-            for (var header in xhr.headers){
+            for (var header in xhr.headers) {
                 connection.addRequestProperty(header, xhr.headers[header]);
-          }connection.connect();
+            }
+            connection.connect();
             
             // Stick the response headers into responseHeaders
             for (var i = 0; ; i++) { 
@@ -7641,7 +7645,8 @@ XMLHttpRequest.prototype = {
         					    $log("parsing response text into xml document");
         						responseXML = $domparser.parseFromString(_this.responseText+"");
                                 return responseXML;
-        					} catch(e) { return null;/*TODO: need to flag an error here*/}
+        					} catch(e) { 
+        					  return null;/*TODO: need to flag an error here*/}
       					}
       				}else{return null;}
       			});
