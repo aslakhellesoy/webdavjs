@@ -51,9 +51,7 @@ suite('WebDAV')
 
   test('should create file', function() {
     var file = WebDav.Fs.file('http://localhost:8085/webdav/foo.txt');
-    file.write("helloworld", function(x){
-      print("YAYA:"+x);
-    });
+    file.write("helloworld");
     assertEquals("helloworld", file.read());
   })
 
