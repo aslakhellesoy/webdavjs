@@ -1,0 +1,53 @@
+h1. WebDav.js
+
+This is a simple JavaScript library that attempts to implement a subset of the
+WebDav standard. It (currently) doesn't aim to be complete - just support basic
+operations.
+
+WebDav.js has a low-level API (the WebDav object) and a higher level, more OO API
+(WebDav.Fs).
+
+Both APIs can operate in synchronous and asynchronous mode: All functions that 
+declare a callback argument accept an optional function. If a callback function is 
+passed, the HTTP request will happen asynchronously, passing the result to that
+function. If no callback function is passed, the result is returned directly after
+the synchronous HTTP request.
+
+For each function - "result" refers to either the function's return value or the 
+argument passed to the callback function (if any).
+
+h2. WebDav
+
+This is a very thin wrapper around XMLHttpRequest.
+
+h2. WebDav.Fs
+
+This is probably what you want to use. This object has two functions:
+
+* WebDav.Fs.dir(url) - returns a Dir object
+* WebDav.Fs.file(url) - returns a File object
+
+h3. File.read(callback)
+
+Reads the file and passes the contents to the result.
+
+h3. File.write(data, callback)
+
+Writes data to the file.
+
+h3. File.rm()
+
+Deletes the file.
+
+h3. Dir.children()
+
+Lists all files and directories under Dir. The result is an Array of other File
+and/or Dir objects.
+
+h3. Dir.mkdir()
+
+Creates the directory.
+
+h3. Dir.rm()
+
+Removes the directory.
