@@ -35,19 +35,19 @@ h3. File.write(data, callback)
 
 Writes data to the file.
 
-h3. File.rm()
+h3. File.rm(callback)
 
 Deletes the file.
 
-h3. Dir.children()
+h3. Dir.children(callback)
 
 Lists all files and directories under Dir. The result is an Array of other File
 and/or Dir objects.
 
-h3. Dir.mkdir()
+h3. Dir.mkdir(callback)
 
 Creates the directory.
 
-h3. Dir.rm()
+h3. Dir.rm(callback)
 
 Removes the directory.
