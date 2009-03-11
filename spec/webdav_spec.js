@@ -1,5 +1,5 @@
 load('jsspec/src/jsspec2.js');
-load('src/env.rhino.js');
+load('spec/env.rhino.js');
 load('src/webdav.js');
 
 with(jsspec.dsl.TDD) {
