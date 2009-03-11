@@ -1,22 +1,26 @@
 // A raw WebDAV interface
 var WebDav = {
   GET: function(url, callback) {
-    return this.request('GET', url, 'text', callback);
+    return this.request('GET', url, null, 'text', callback);
   },
 
   PROPFIND: function(url, callback) {
-    return this.request('PROPFIND', url, 'xml', callback);
+    return this.request('PROPFIND', url, null, 'xml', callback);
   },
 
   MKCOL: function(url, callback) {
-    return this.request('MKCOL', url, 'text', callback);
+    return this.request('MKCOL', url, null, 'text', callback);
   },
   
   DELETE: function(url, callback) {
-    return this.request('DELETE', url, 'text', callback);
+    return this.request('DELETE', url, null, 'text', callback);
+  },
+
+  PUT: function(url, data, callback) {
+    return this.request('PUT', url, data, 'text', callback);
   },
   
-  request: function(verb, url, type, callback) {
+  request: function(verb, url, data, type, callback) {
     var xhr = new XMLHttpRequest();
     var body = function() {
       var b = xhr.responseText;
@@ -41,7 +45,7 @@ var WebDav = {
     }
     xhr.open(verb, url, async);
     xhr.setRequestHeader("Content-Type", "text/xml; charset=UTF-8");
-    xhr.send(null);
+    xhr.send(data);
 
     if(!async) {
       return body();
@@ -56,6 +60,10 @@ WebDav.Fs = {
     
     this.read = function(callback) {
       return WebDav.GET(url, callback);
+    };
+
+    this.write = function(data, callback) {
+      return WebDav.PUT(url, data, callback);
     };
 
     this.rm = function(callback) {
