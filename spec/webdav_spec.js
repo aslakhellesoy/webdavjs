@@ -37,7 +37,11 @@ suite('WebDAV')
   
   test('should mkdir', function() {
     var dir = WebDav.Fs.dir('http://localhost:8085/webdav/testmkdir');
-    dir.rm();
+    try {
+      dir.rm();
+    } catch(e) {
+    }
+
     var expectedFailure = false;
     try {
       dir.children();
@@ -51,8 +55,8 @@ suite('WebDAV')
 
   test('should create file', function() {
     var file = WebDav.Fs.file('http://localhost:8085/webdav/foo.txt');
-    file.write("helloworld");
-    assertEquals("helloworld", file.read());
+    file.write("Some\nFile data");
+    assertEquals("Some\nFile data", file.read());
   })
 
 run();

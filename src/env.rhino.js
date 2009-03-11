@@ -112,7 +112,7 @@ var __env__ = {};
         file["delete"]();
     };
     
-    $env.connection = function(xhr, responseHandler){
+    $env.connection = function(xhr, data, responseHandler){
         var url = java.net.URL(xhr.url);//, $w.location);
       var connection;
         if ( /^file\:/.test(url) ) {
@@ -133,7 +133,15 @@ var __env__ = {};
             for (var header in xhr.headers) {
                 connection.addRequestProperty(header, xhr.headers[header]);
             }
-            connection.connect();
+
+            if(data) {
+              connection.setDoOutput(true);
+              var out = new java.io.DataOutputStream(connection.getOutputStream());
+              out.writeBytes(data);
+              out.close();
+            } else {
+              connection.connect();
+            }
             
             // Stick the response headers into responseHeaders
             for (var i = 0; ; i++) { 
@@ -7635,7 +7643,7 @@ XMLHttpRequest.prototype = {
 		var _this = this;
 		
 		function makeRequest(){
-			$env.connection(_this, function(){
+			$env.connection(_this, data, function(){
 			  var responseXML = null;
 				_this.__defineGetter__("responseXML", function(){
       				if ( _this.responseText.match(/^\s*</) ) {
