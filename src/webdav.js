@@ -27,21 +27,21 @@ var WebDav = {
       if (type == 'xml') {
         var xml = xhr.responseXML;
         if(xml) {
-          b = (xml.firstChild.nextSibling) ? xml.firstChild.nextSibling : xml.firstChild;
+          b = xml.firstChild.nextSibling ? xml.firstChild.nextSibling : xml.firstChild;
         }
       }
       return b;
     };
     
-    var async = !(callback == null);
+    var async = !(callback === null);
     if(async) {
       xhr.onreadystatechange = function(readyState) {
-        if(readyState == 4 || readyState == null) { // complete. (null check is workaround for env.rhino.js).
+        if(readyState == 4 || readyState === null) { // complete. (null check is workaround for env.rhino.js).
           if(body()) { // Workaround for env.rhino.js
             callback(body());
           }
         }
-      }
+      };
     }
     xhr.open(verb, url, async);
     xhr.setRequestHeader("Content-Type", "text/xml; charset=UTF-8");
@@ -78,7 +78,7 @@ WebDav.Fs = {
 
     this.children = function(callback) {
       var childrenFunc = function(doc) {
-        if(doc.childNodes == null) {
+        if(doc.childNodes === null) {
           throw('No such directory: ' + url);
         }
         var result = [];
@@ -118,4 +118,4 @@ WebDav.Fs = {
 
     return this;
   }
-}
+};

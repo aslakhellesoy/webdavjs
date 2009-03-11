@@ -51,3 +51,24 @@ Creates the directory.
 h3. Dir.rm(callback)
 
 Removes the directory.
+
+h2. Usage
+
+Not written yet - haven't used it in a browser yet :-)
+
+h2. Running tests
+
+You need to download some tools. Run ./install_tools.sh to pull them down.
+
+h3. In shell A
+
+<pre>
+cd milton/milton-test
+mvn jetty:run
+</pre>
+
+h3. In shell B
+
+<pre>
+ant jsspec
+</pre>

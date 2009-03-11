@@ -20,7 +20,7 @@
 
     <jslint options="undef">
       <formatter type="plain" />
-      <fileset dir="src" includes="*.js" />
+      <fileset dir="src" includes="webdav.js" />
     </jslint>
   </target>
 </project>
