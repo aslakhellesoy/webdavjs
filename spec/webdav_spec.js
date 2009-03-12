@@ -24,11 +24,13 @@ suite('WebDAV.Fs')
     var fs = new WebDAV.Fs('http://localhost:10080');
     var dir = fs.dir('/a');
 
-    assertEquals(3, dir.children().length);
+    assertEquals(2, dir.children().length);
 
-    assertEquals('http://localhost:10080/a',     dir.children()[0].url);
-    assertEquals('http://localhost:10080/a/b/',   dir.children()[1].url);
-    assertEquals('http://localhost:10080/a/bla', dir.children()[2].url);
+    assertEquals('b',   dir.children()[0].name);
+    assertEquals('bla', dir.children()[1].name);
+
+    assertEquals('http://localhost:10080/a/b',  dir.children()[0].url);
+    assertEquals('http://localhost:10080/a/bla', dir.children()[1].url);
   })
   
   test('should mkdir', function() {
@@ -46,7 +48,7 @@ suite('WebDAV.Fs')
       dir.mkdir();
     }
     assertTrue(expectedFailure);
-    assertEquals(1, dir.children().length);
+    assertEquals(0, dir.children().length);
   })
 
   xtest('should create file', function() {

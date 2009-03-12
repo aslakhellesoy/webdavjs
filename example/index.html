@@ -1,0 +1,42 @@
+<html>
+  <head>
+    <script type="text/javascript" src="../src/webdav.js"></script>
+    <script type="text/javascript" src="jquery-1.3.2.min.js"></script>
+    <script type="text/javascript">
+      var fs = new WebDAV.Fs('http://localhost:10080');
+
+      var urlid = function(u) {
+        return u.replace(/:/g, '_').replace(/\//g, '_');
+      };
+
+      var loadDir = function(dir, parentNode) {
+        dir.children(function(children) {
+          var ulId = urlid(dir.url) + '_ul';
+
+          var ul = '<ul id="' + ulId + '">'
+          for (var c in children) {
+            ul += '<li class="' + children[c].type + '" id="' + 
+            urlid(children[c].url) + '"><a href="' + 
+            children[c].url + '">' + children[c].name + '</a></li>';
+          }
+          ul += '</ul>';
+          
+          $(parentNode).append(ul);
+          $('#' + ulId).children('.dir').click(function(e) {
+            loadDir(fs.dir(e.target.href), '#' + urlid(e.target.href));
+            return false;
+          });
+        });
+      }
+
+      $(document).ready(function(){
+        loadDir(fs.dir('/'), '#root')
+      });
+    </script>
+  </head>
+  <body>
+    <h1>WebDAV.js example</h1>
+    
+    <div id="root"></div>
+  </body>
+</html>

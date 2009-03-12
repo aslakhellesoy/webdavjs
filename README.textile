@@ -67,9 +67,19 @@ h3. Dir.rm(callback)
 
 Removes the directory.
 
-h2. Usage
+h2. Usage/Example
 
-Not written yet - haven't used it in a browser yet :-)
+Check out example/index.html
+
+To see it in action in a browser, stand in the root folder and run:
+
+<pre>
+ruby spec/webdav_server.rb
+</pre>
+
+Then point your browser to http://localhost:10080/example/index.html
+
+You should be able to browse and edit everything from within your browser.
 
 h2. Running tests
 

@@ -33,24 +33,24 @@ var WebDAV = {
       return b;
     };
     
-    var async = !(callback == null);
-    if(async) {
-      xhr.onreadystatechange = function(readyState) {
-        if(readyState == 4 || readyState == null) { // complete. (null check is workaround for env.rhino.js).
-          if(body()) { // Workaround for env.rhino.js
-            callback(body());
+    if(callback) {
+      xhr.onreadystatechange = function() {
+        if(xhr.readyState == 4) { // complete.
+          var b = body();
+          if(b) {
+            callback(b);
           }
         }
       };
     }
-    xhr.open(verb, url, async);
+    xhr.open(verb, url, !!callback);
     xhr.setRequestHeader("Content-Type", "text/xml; charset=UTF-8");
     for (var header in headers) {
       xhr.setRequestHeader(header, headers[header]);
     }
     xhr.send(data);
 
-    if(!async) {
+    if(!callback) {
       return body();
     }
   }
@@ -62,8 +62,12 @@ WebDAV.Fs = function(rootUrl) {
   var fs = this;
   
   this.file = function(href) {
+    this.type = 'file';
+
     this.url = fs.urlFor(href);
-    
+
+    this.name = fs.nameFor(this.url);
+
     this.read = function(callback) {
       return WebDAV.GET(this.url, callback);
     };
@@ -80,7 +84,11 @@ WebDAV.Fs = function(rootUrl) {
   };
   
   this.dir = function(href) {
+    this.type = 'dir';
+
     this.url = fs.urlFor(href);
+
+    this.name = fs.nameFor(this.url);
 
     this.children = function(callback) {
       var childrenFunc = function(doc) {
@@ -88,18 +96,20 @@ WebDAV.Fs = function(rootUrl) {
           throw('No such directory: ' + url);
         }
         var result = [];
-        for(var i=0; i< doc.childNodes.length; i++) {
+        // Start at 1, because the 0th is the same as self.
+        for(var i=1; i< doc.childNodes.length; i++) {
           var response     = doc.childNodes[i];
           var href         = response.getElementsByTagName('D:href')[0].firstChild.nodeValue;
+          href = href.replace(/\/$/, ''); // Strip trailing slash
           var propstat     = response.getElementsByTagName('D:propstat')[0];
           var prop         = propstat.getElementsByTagName('D:prop')[0];
           var resourcetype = prop.getElementsByTagName('D:resourcetype')[0];
           var collection   = resourcetype.getElementsByTagName('D:collection')[0];
 
           if(collection) {
-            result[i] = new fs.dir(href);
+            result[i-1] = new fs.dir(href);
           } else {
-            result[i] = new fs.file(href);
+            result[i-1] = new fs.file(href);
           }
         }
         return result;
@@ -127,6 +137,10 @@ WebDAV.Fs = function(rootUrl) {
   
   this.urlFor = function(href) {
     return (/^http/.test(href) ? href : this.rootUrl + href);
+  };
+  
+  this.nameFor = function(url) {
+    return url.replace(/.*\/(.*)/, '$1');
   };
 
   return this;
