@@ -1,5 +1,5 @@
 // A raw WebDAV interface
-var WebDav = {
+var WebDAV = {
   GET: function(url, callback) {
     return this.request('GET', url, {}, null, 'text', callback);
   },
@@ -56,8 +56,8 @@ var WebDav = {
   }
 };
 
-// An Object-oriented API around WebDav.
-WebDav.Fs = function(rootUrl) {
+// An Object-oriented API around WebDAV.
+WebDAV.Fs = function(rootUrl) {
   var fs = this;
   
   this.file = function(href) {
@@ -68,15 +68,15 @@ WebDav.Fs = function(rootUrl) {
     }
     
     this.read = function(callback) {
-      return WebDav.GET(this.url, callback);
+      return WebDAV.GET(this.url, callback);
     };
 
     this.write = function(data, callback) {
-      return WebDav.PUT(this.url, data, callback);
+      return WebDAV.PUT(this.url, data, callback);
     };
 
     this.rm = function(callback) {
-      return WebDav.DELETE(this.url, callback);
+      return WebDAV.DELETE(this.url, callback);
     };
 
     return this;
@@ -113,20 +113,20 @@ WebDav.Fs = function(rootUrl) {
       };
 
       if(callback) {
-        WebDav.PROPFIND(this.url, function(doc) {
+        WebDAV.PROPFIND(this.url, function(doc) {
           callback(childrenFunc(doc));
         });
       } else {
-        return childrenFunc(WebDav.PROPFIND(this.url));
+        return childrenFunc(WebDAV.PROPFIND(this.url));
       }
     };
 
     this.rm = function(callback) {
-      return WebDav.DELETE(this.url, callback);
+      return WebDAV.DELETE(this.url, callback);
     };
 
     this.mkdir = function(callback) {
-      return WebDav.MKCOL(this.url, callback);
+      return WebDAV.MKCOL(this.url, callback);
     };
 
     return this;

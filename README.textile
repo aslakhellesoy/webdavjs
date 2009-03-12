@@ -1,11 +1,11 @@
-h1. WebDav.js
+h1. WebDAV.js
 
 This is a simple JavaScript library that attempts to implement a subset of the
-WebDav standard. It (currently) doesn't aim to be complete - just support basic
+WebDAV standard. It (currently) doesn't aim to be complete - just support basic
 operations.
 
-WebDav.js has a low-level API (the WebDav object) and a higher level, more OO API
-(WebDav.Fs).
+WebDAV.js has a low-level API (the WebDAV object) and a higher level, more OO API
+(WebDAV.Fs).
 
 Both APIs can operate in synchronous and asynchronous mode: All functions that 
 declare a callback argument accept an optional function. If a callback function is 
@@ -16,16 +16,31 @@ the synchronous HTTP request.
 For each function - "result" refers to either the function's return value or the 
 argument passed to the callback function (if any).
 
-h2. WebDav
+h2. WebDAV
 
 This is a very thin wrapper around XMLHttpRequest.
 
-h2. WebDav.Fs
+h2. WebDAV.Fs
 
-This is probably what you want to use. This object has two functions:
+This is the entry point to the OO interface. Create a new instance like this:
 
-* WebDav.Fs.dir(url) - returns a Dir object
-* WebDav.Fs.file(url) - returns a File object
+<pre>
+var fs = new WebDAV.Fs(url);
+</pre>
+
+A WebDAV.Fs object has 2 methods:
+
+* dir(url) - returns a Dir object
+* file(url) - returns a File object
+
+The url argument can be an absulute or relative URL. Example:
+
+<pre>
+var fs = new WebDAV.Fs('http://localhost:1234/my_files');
+var hello = fs.file('/my/hello.txt');
+// This is the same as:
+var hello = fs.file('http://localhost:1234/my_files/my/hello.txt');
+</pre>
 
 h3. File.read(callback)
 

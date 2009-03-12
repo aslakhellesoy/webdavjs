@@ -11,17 +11,17 @@ suite('WebDAV.Fs')
   })
 
   test('should read cotents of a relative File', function() {
-    var bla = new WebDav.Fs('http://localhost:10080').file('/a/bla');
+    var bla = new WebDAV.Fs('http://localhost:10080').file('/a/bla');
     assertEquals('bla', bla.read());
   })
 
   test('should read cotents of an absolute File', function() {
-    var bla = new WebDav.Fs('http://localhost:10080').file('http://localhost:10080/a/bla');
+    var bla = new WebDAV.Fs('http://localhost:10080').file('http://localhost:10080/a/bla');
     assertEquals('bla', bla.read());
   })
   
   test('should list contents of directory', function() {
-    var fs = new WebDav.Fs('http://localhost:10080');
+    var fs = new WebDAV.Fs('http://localhost:10080');
     var dir = fs.dir('/a');
 
     assertEquals(3, dir.children().length);
@@ -32,7 +32,7 @@ suite('WebDAV.Fs')
   })
   
   test('should mkdir', function() {
-    var dir = new WebDav.Fs('http://localhost:10080').dir('/testmkdir');
+    var dir = new WebDAV.Fs('http://localhost:10080').dir('/testmkdir');
     try {
       dir.rm();
     } catch(e) {
@@ -50,7 +50,7 @@ suite('WebDAV.Fs')
   })
 
   xtest('should create file', function() {
-    var file = WebDav.Fs.file('http://localhost:10080/a/new.txt');
+    var file = WebDAV.Fs.file('http://localhost:10080/a/new.txt');
     file.write("Some\nFile data");
     assertEquals("Some\nFile data", file.read());
     file.rm();
