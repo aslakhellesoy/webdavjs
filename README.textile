@@ -63,8 +63,7 @@ You need to download some tools. Run ./install_tools.sh to pull them down.
 h3. In shell A
 
 <pre>
-cd milton/milton-test
-mvn jetty:run
+ruby spec/webdav_server.rb spec/fixtures
 </pre>
 
 h3. In shell B

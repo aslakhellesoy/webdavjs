@@ -1,26 +1,26 @@
 // A raw WebDAV interface
 var WebDav = {
   GET: function(url, callback) {
-    return this.request('GET', url, null, 'text', callback);
+    return this.request('GET', url, {}, null, 'text', callback);
   },
 
   PROPFIND: function(url, callback) {
-    return this.request('PROPFIND', url, null, 'xml', callback);
+    return this.request('PROPFIND', url, {Depth: "1"}, null, 'xml', callback);
   },
 
   MKCOL: function(url, callback) {
-    return this.request('MKCOL', url, null, 'text', callback);
+    return this.request('MKCOL', url, {}, null, 'text', callback);
   },
   
   DELETE: function(url, callback) {
-    return this.request('DELETE', url, null, 'text', callback);
+    return this.request('DELETE', url, {}, null, 'text', callback);
   },
 
   PUT: function(url, data, callback) {
-    return this.request('PUT', url, data, 'text', callback);
+    return this.request('PUT', url, {}, data, 'text', callback);
   },
   
-  request: function(verb, url, data, type, callback) {
+  request: function(verb, url, headers, data, type, callback) {
     var xhr = new XMLHttpRequest();
     var body = function() {
       var b = xhr.responseText;
@@ -45,6 +45,9 @@ var WebDav = {
     }
     xhr.open(verb, url, async);
     xhr.setRequestHeader("Content-Type", "text/xml; charset=UTF-8");
+    for (var header in headers) {
+      xhr.setRequestHeader(header, headers[header]);
+    }
     xhr.send(data);
 
     if(!async) {
@@ -54,27 +57,37 @@ var WebDav = {
 };
 
 // An Object-oriented API around WebDav.
-WebDav.Fs = {
-  file: function(url) {
-    this.url = url;
+WebDav.Fs = function(rootUrl) {
+  var fs = this;
+  
+  this.file = function(href) {
+    if(/^http/.test(href)) {
+      this.url = href;
+    } else {
+      this.url = rootUrl + href;
+    }
     
     this.read = function(callback) {
-      return WebDav.GET(url, callback);
+      return WebDav.GET(this.url, callback);
     };
 
     this.write = function(data, callback) {
-      return WebDav.PUT(url, data, callback);
+      return WebDav.PUT(this.url, data, callback);
     };
 
     this.rm = function(callback) {
-      return WebDav.DELETE(url, callback);
+      return WebDav.DELETE(this.url, callback);
     };
 
     return this;
-  },
+  };
   
-  dir: function(url) {
-    this.url = url;
+  this.dir = function(href) {
+    if(/^http/.test(href)) {
+      this.url = href;
+    } else {
+      this.url = rootUrl + href;
+    }
 
     this.children = function(callback) {
       var childrenFunc = function(doc) {
@@ -91,31 +104,33 @@ WebDav.Fs = {
           var collection   = resourcetype.getElementsByTagName('D:collection')[0];
 
           if(collection) {
-            result[i] = new WebDav.Fs.dir(href);
+            result[i] = new fs.dir(href);
           } else {
-            result[i] = new WebDav.Fs.file(href);
+            result[i] = new fs.file(href);
           }
         }
         return result;
       };
 
       if(callback) {
-        WebDav.PROPFIND(url, function(doc) {
+        WebDav.PROPFIND(this.url, function(doc) {
           callback(childrenFunc(doc));
         });
       } else {
-        return childrenFunc(WebDav.PROPFIND(url));
+        return childrenFunc(WebDav.PROPFIND(this.url));
       }
     };
 
     this.rm = function(callback) {
-      return WebDav.DELETE(url, callback);
+      return WebDav.DELETE(this.url, callback);
     };
 
     this.mkdir = function(callback) {
-      return WebDav.MKCOL(url, callback);
+      return WebDav.MKCOL(this.url, callback);
     };
 
     return this;
-  }
+  };
+  
+  return this;
 };
