@@ -58,14 +58,11 @@ var WebDAV = {
 
 // An Object-oriented API around WebDAV.
 WebDAV.Fs = function(rootUrl) {
+  this.rootUrl = rootUrl;
   var fs = this;
   
   this.file = function(href) {
-    if(/^http/.test(href)) {
-      this.url = href;
-    } else {
-      this.url = rootUrl + href;
-    }
+    this.url = fs.urlFor(href);
     
     this.read = function(callback) {
       return WebDAV.GET(this.url, callback);
@@ -83,11 +80,7 @@ WebDAV.Fs = function(rootUrl) {
   };
   
   this.dir = function(href) {
-    if(/^http/.test(href)) {
-      this.url = href;
-    } else {
-      this.url = rootUrl + href;
-    }
+    this.url = fs.urlFor(href);
 
     this.children = function(callback) {
       var childrenFunc = function(doc) {
@@ -132,5 +125,9 @@ WebDAV.Fs = function(rootUrl) {
     return this;
   };
   
+  this.urlFor = function(href) {
+    return (/^http/.test(href) ? href : this.rootUrl + href);
+  };
+
   return this;
 };
