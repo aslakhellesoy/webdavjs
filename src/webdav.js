@@ -21,7 +21,7 @@ var WebDAV = {
   },
   
   request: function(verb, url, headers, data, type, callback) {
-    var xhr = new XMLHttpRequest();
+    var xhr = new XMLHttpRequest({ mozSystem: true});
     var body = function() {
       var b = xhr.responseText;
       if (type == 'xml') {
