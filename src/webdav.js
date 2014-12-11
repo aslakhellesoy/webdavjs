@@ -21,7 +21,7 @@ var WebDAV = {
   },
   
   request: function(verb, url, headers, data, type, callback) {
-    var xhr = new XMLHttpRequest({ mozSystem: true});
+    var xhr = this.XMLHttpRequestProvider();
     var body = function() {
       var b = xhr.responseText;
       if (type == 'xml') {
@@ -53,9 +53,12 @@ var WebDAV = {
     if(!callback) {
       return body();
     }
+  },
+  XMLHttpRequestProvider : function () {
+    return new XMLHttpRequest();
   }
 };
-
+ 
 // An Object-oriented API around WebDAV.
 WebDAV.Fs = function(rootUrl) {
   this.rootUrl = rootUrl;
