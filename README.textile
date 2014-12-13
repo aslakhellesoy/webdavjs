@@ -20,6 +20,13 @@ h2. WebDAV
 
 This is a very thin wrapper around XMLHttpRequest.
 
+Also, if you would like to provide a custom XMLHttpRequest override the WEBDAV.XMLHttpRequestProvider function e.g:
+<pre>
+WebDAV.XMLHttpRequestProvider =  function () {
+	return new XMLHttpRequest({mozSystem: true});
+}
+</pre>
+
 h2. WebDAV.Fs
 
 This is the entry point to the OO interface. Create a new instance like this:
