@@ -1,4 +1,4 @@
-h1. WebDAV.js
+# WebDAV.js
 
 This is a simple JavaScript library that attempts to implement a subset of the
 WebDAV standard. It (currently) doesn't aim to be complete - just support basic
@@ -16,24 +16,24 @@ the synchronous HTTP request.
 For each function - "result" refers to either the function's return value or the 
 argument passed to the callback function (if any).
 
-h2. WebDAV
+## WebDAV
 
 This is a very thin wrapper around XMLHttpRequest.
 
 Also, if you would like to provide a custom XMLHttpRequest override the WEBDAV.XMLHttpRequestProvider function e.g:
-<pre>
+```
 WebDAV.XMLHttpRequestProvider =  function () {
 	return new XMLHttpRequest({mozSystem: true});
 }
-</pre>
+```
 
-h2. WebDAV.Fs
+## WebDAV.Fs
 
 This is the entry point to the OO interface. Create a new instance like this:
 
-<pre>
+```
 var fs = new WebDAV.Fs(url);
-</pre>
+```
 
 A WebDAV.Fs object has 2 methods:
 
@@ -42,64 +42,64 @@ A WebDAV.Fs object has 2 methods:
 
 The url argument can be an absulute or relative URL. Example:
 
-<pre>
+```
 var fs = new WebDAV.Fs('http://localhost:1234/my_files');
 var hello = fs.file('/my/hello.txt');
 // This is the same as:
 var hello = fs.file('http://localhost:1234/my_files/my/hello.txt');
-</pre>
+```
 
-h3. File.read(callback)
+### File.read(callback)
 
 Reads the file and passes the contents to the result.
 
-h3. File.write(data, callback)
+### File.write(data, callback)
 
 Writes data to the file.
 
-h3. File.rm(callback)
+### File.rm(callback)
 
 Deletes the file.
 
-h3. Dir.children(callback)
+### Dir.children(callback)
 
 Lists all files and directories under Dir. The result is an Array of other File
 and/or Dir objects.
 
-h3. Dir.mkdir(callback)
+### Dir.mkdir(callback)
 
 Creates the directory.
 
-h3. Dir.rm(callback)
+### Dir.rm(callback)
 
 Removes the directory.
 
-h2. Usage/Example
+## Usage/Example
 
 Check out example/index.html
 
 To see it in action in a browser, stand in the root folder and run:
 
-<pre>
+```
 ruby spec/webdav_server.rb
-</pre>
+```
 
-Then point your browser to http://localhost:10080/example/index.html
+Then point your browser to [http://localhost:10080/example/index.html](http://localhost:10080/example/index.html)
 
 You should be able to browse and edit everything from within your browser.
 
-h2. Running tests
+## Running tests
 
 You need to download some tools. Run ./install_tools.sh to pull them down.
 
-h3. In shell A
+### In shell A
 
-<pre>
+```
 ruby spec/webdav_server.rb spec/fixtures
-</pre>
+```
 
-h3. In shell B
+### In shell B
 
-<pre>
+```
 ant jsspec
-</pre>
+```
