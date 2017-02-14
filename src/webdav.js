@@ -58,13 +58,13 @@ var WebDAV = {
 
 // An Object-oriented API around WebDAV.
 WebDAV.Fs = function(rootUrl) {
-  this.rootUrl = rootUrl;
+  this.rootUrl = rootUrl.replace(/\/$/, ''); // Strip trailing slash;
   var fs = this;
   
-  this.file = function(href) {
+  this.file = function(href, urlisabsolute) {
     this.type = 'file';
 
-    this.url = fs.urlFor(href);
+    this.url = urlisabsolute ? href : fs.urlFor(href);;
 
     this.name = fs.nameFor(this.url);
 
@@ -83,10 +83,10 @@ WebDAV.Fs = function(rootUrl) {
     return this;
   };
   
-  this.dir = function(href) {
+  this.dir = function(href,urlisabsolute) {
     this.type = 'dir';
 
-    this.url = fs.urlFor(href);
+    this.url = urlisabsolute ? href : fs.urlFor(href);
 
     this.name = fs.nameFor(this.url);
 
@@ -97,19 +97,19 @@ WebDAV.Fs = function(rootUrl) {
         }
         var result = [];
         // Start at 1, because the 0th is the same as self.
-        for(var i=1; i< doc.childNodes.length; i++) {
-          var response     = doc.childNodes[i];
-          var href         = response.getElementsByTagName('D:href')[0].firstChild.nodeValue;
+        for(var i=1; i< doc.children.length; i++) {
+          var response     = doc.children[i];
+          var href         = response.getElementsByTagNameNS('DAV:','href')[0].firstChild.nodeValue;
           href = href.replace(/\/$/, ''); // Strip trailing slash
-          var propstat     = response.getElementsByTagName('D:propstat')[0];
-          var prop         = propstat.getElementsByTagName('D:prop')[0];
-          var resourcetype = prop.getElementsByTagName('D:resourcetype')[0];
-          var collection   = resourcetype.getElementsByTagName('D:collection')[0];
+          var propstat     = response.getElementsByTagNameNS('DAV:','propstat')[0];
+          var prop         = propstat.getElementsByTagNameNS('DAV:','prop')[0];
+          var resourcetype = prop.getElementsByTagNameNS('DAV:','resourcetype')[0];
+          var collection   = resourcetype.getElementsByTagNameNS('DAV:','collection')[0];
 
           if(collection) {
-            result[i-1] = new fs.dir(href);
+            result[i-1] = new fs.dir(href,true);
           } else {
-            result[i-1] = new fs.file(href);
+            result[i-1] = new fs.file(href,true);
           }
         }
         return result;
