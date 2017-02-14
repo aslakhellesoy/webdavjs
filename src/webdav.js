@@ -20,6 +20,15 @@ var WebDAV = {
     return this.request('PUT', url, {}, data, 'text', callback);
   },
   
+  COPY: function(url, desturl, callback) {
+	return this.request('COPY',url, {"Destination":desturl, "Depth":'infinity'}, null, 'text', callback);
+  },
+  
+  MOVE: function(url, desturl, callback) {
+	return this.request('MOVE',url, {"Destination":desturl, "Depth":'infinity'}, null, 'text', callback);
+  },
+  
+  
   request: function(verb, url, headers, data, type, callback) {
     var xhr = new XMLHttpRequest();
     var body = function() {
@@ -44,7 +53,7 @@ var WebDAV = {
       };
     }
     xhr.open(verb, url, !!callback);
-    xhr.setRequestHeader("Content-Type", "text/xml; charset=UTF-8");
+    if(data != null) xhr.setRequestHeader("Content-Type", "text/xml; charset=UTF-8");
     for (var header in headers) {
       xhr.setRequestHeader(header, headers[header]);
     }
@@ -58,8 +67,32 @@ var WebDAV = {
 
 // An Object-oriented API around WebDAV.
 WebDAV.Fs = function(rootUrl) {
+	//Make url absolute
+  if(!/^http/.test(rootUrl)) rootUrl = location.protocol + '//' + location.host + rootUrl;
+	
   this.rootUrl = rootUrl.replace(/\/$/, ''); // Strip trailing slash;
+
   var fs = this;
+  
+  function addcommon(obj) {
+		obj.copy = function(desturl, callback) {
+		  return WebDAV.COPY(this.url, fs.urlFor(desturl), function() {
+			  console.log("FIXME: Pass in undefined in case of error !!");
+			  callback(fs[obj.type](desturl));
+		  });
+		}
+		
+		obj.move = function(desturl, callback) {
+		  return WebDAV.MOVE(this.url, fs.urlFor(desturl), function() {
+			  console.log("FIXME: Pass in undefined in case of error !!");
+			  callback(fs[obj.type](desturl));
+		  });
+		}
+		
+		this.rm = function(callback) {
+		  return WebDAV.DELETE(this.url, callback);
+		}
+  }
   
   this.file = function(href, urlisabsolute) {
     this.type = 'file';
@@ -76,10 +109,8 @@ WebDAV.Fs = function(rootUrl) {
       return WebDAV.PUT(this.url, data, callback);
     };
 
-    this.rm = function(callback) {
-      return WebDAV.DELETE(this.url, callback);
-    };
-
+	addcommon(this);
+	
     return this;
   };
   
@@ -124,9 +155,7 @@ WebDAV.Fs = function(rootUrl) {
       }
     };
 
-    this.rm = function(callback) {
-      return WebDAV.DELETE(this.url, callback);
-    };
+    addcommon(this);
 
     this.mkdir = function(callback) {
       return WebDAV.MKCOL(this.url, callback);
