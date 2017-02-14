@@ -1,4 +1,5 @@
 // A raw WebDAV interface
+// callbacks are all : function(body,error,xhrobj).  
 var WebDAV = {
   GET: function(url, callback) {
     return this.request('GET', url, {}, null, 'text', callback);
@@ -45,10 +46,7 @@ var WebDAV = {
     if(callback) {
       xhr.onreadystatechange = function() {
         if(xhr.readyState == 4) { // complete.
-          var b = body();
-          if(b) {
-            callback(b);
-          }
+		  callback((body() || ""), xhr.status >= 400, xhr);
         }
       };
     }
@@ -75,17 +73,16 @@ WebDAV.Fs = function(rootUrl) {
   var fs = this;
   
   function addcommon(obj) {
+		//Copy: callback will receive the new file/dir object or undefined if error occurs with xhr object to fetch details
 		obj.copy = function(desturl, callback) {
-		  return WebDAV.COPY(this.url, fs.urlFor(desturl), function() {
-			  console.log("FIXME: Pass in undefined in case of error !!");
-			  callback(fs[obj.type](desturl));
+		  return WebDAV.COPY(this.url, fs.urlFor(desturl), function(body,error,xhr) {
+			  callback(error ? undefined : fs[obj.type](desturl),xhr);
 		  });
 		}
 		
 		obj.move = function(desturl, callback) {
-		  return WebDAV.MOVE(this.url, fs.urlFor(desturl), function() {
-			  console.log("FIXME: Pass in undefined in case of error !!");
-			  callback(fs[obj.type](desturl));
+		  return WebDAV.MOVE(this.url, fs.urlFor(desturl), function(body,error,xhr) {
+			  callback(error ? undefined : fs[obj.type](desturl),xhr);
 		  });
 		}
 		
